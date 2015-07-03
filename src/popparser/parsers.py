@@ -7,7 +7,7 @@ Created on 7 august 2012
 
 from collections import defaultdict
 
-from popy.llparser import ParseResult, ParseError
+from popparser.llparser import ParseResult, ParseError
 
 
 #==============================================================================

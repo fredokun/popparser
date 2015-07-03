@@ -5,7 +5,7 @@ Created on 24 août 2012
 @author: F. Peschanski
 '''
 
-from popy import ParseException, Parser
+from popparser import ParseException, Parser
 
 
 class Grammar:

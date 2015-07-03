@@ -5,10 +5,14 @@ Created on 27 august 2012
 @author: F. Peschanski
 '''
 
-from popy import Grammar, ParseResult, ParseError,\
+if __name__ == "__main__":
+    import sys
+    sys.path.append("../src")
+
+from popparser import Grammar, ParseResult, ParseError,\
                  parsers, tokens, expr
-from popy.llparser import LLParsing
-from popy.tokenizer import Tokenizer
+from popparser.llparser import LLParsing
+from popparser.tokenizer import Tokenizer
 
 
 class CalculatorEval:

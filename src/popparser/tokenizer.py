@@ -8,7 +8,7 @@ Created on 24 august 2012
 from copy import deepcopy
 from collections import defaultdict
 
-from popy.llparser import ParsePosition
+from popparser.llparser import ParsePosition
 
 
 class Token:

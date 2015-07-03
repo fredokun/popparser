@@ -4,7 +4,9 @@ Created on 24 august 2012
 
 @author: F. Peschanski
 '''
-from popy.tokenizer import Token
+
+from popparser.tokenizer import Token
+
 import re
 
 

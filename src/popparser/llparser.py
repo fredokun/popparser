@@ -5,7 +5,7 @@ Created on 7 august 2012
 @author: F. Peschanski
 '''
 
-from popy.debug import ParseDebug
+from popparser.debug import ParseDebug
 
 
 class LLParsing:

@@ -7,17 +7,17 @@ Created on 24 august 2012
 
 if __name__ == "__main__":
     import sys
-    sys.path.append("../..")
+    sys.path.append("../src")
 
 
 import unittest
 
 
-from popy import Tokenizer
-from popy.grammar import Grammar
-from popy.llparser import LLParsing
-import popy.parsers as parse
-import popy.tokens as tok
+from popparser import Tokenizer
+from popparser.grammar import Grammar
+from popparser.llparser import LLParsing
+import popparser.parsers as parse
+import popparser.tokens as tok
 
 
 class TestTokens(unittest.TestCase):

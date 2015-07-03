@@ -5,7 +5,7 @@ Created on 25 august 2012
 @author: F. Peschanski
 '''
 
-from popy import ParseError
+from popparser import ParseError
 
 
 #==============================================================================
