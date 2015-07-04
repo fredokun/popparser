@@ -1,4 +1,4 @@
-from .popy_globals import ParseException
+from .globals import ParseException
 from .parsers import Parser
 from .grammar import Grammar
 from .llparser import ParsePosition, ParseResult, ParseError
