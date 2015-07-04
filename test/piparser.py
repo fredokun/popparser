@@ -64,6 +64,10 @@ class PiParser:
         tokenizer.add_rule(tokens.CharSet('space', ' ', '\t', '\r'))
         tokenizer.add_rule(tokens.Char('lparen', '('))
         tokenizer.add_rule(tokens.Char('rparen', ')'))
+        tokenizer.add_rule(tokens.Char('lbracket', '['))
+        tokenizer.add_rule(tokens.Char('rbracket', ']'))
+        tokenizer.add_rule(tokens.Char('bang', '!'))
+        tokenizer.add_rule(tokens.Char('what', '?'))
 
         # identifiers
         tokenizer.add_rule(tokens.Regexp('name',
@@ -72,7 +76,14 @@ class PiParser:
         # process elements
         tokenizer.add_rule(tokens.LiteralSet('term', '0', 'nil', 'end'))
         tokenizer.add_rule(tokens.LiteralSet('new', 'new', 'res'))
-                
+        tokenizer.add_rule(tokens.Literal('gc', '<gc>'))
+        tokenizer.add_rule(tokens.LiteralSet('tau', 'tau', 'skip'))
+
+        tokenizer.add_rule(tokens.Regexp('output',
+                                         r'([a-zA-Z_][a-zA-Z0-9_]*)!([a-zA-Z_][a-zA-Z0-9_]*)'))
+        tokenizer.add_rule(tokens.Regexp('input',
+                                         r'([a-zA-Z_][a-zA-Z0-9_]*)?\(([a-zA-Z_][a-zA-Z0-9_]*)\)'))
+
         return tokenizer
 
     @staticmethod
@@ -101,11 +112,23 @@ class PiParser:
         
         restrict_parser.xform_content = restrict_xform_content
 
+        # GC process
+        gc_parser = parsers.Tuple().skip(parsers.Token('gc'))\
+                                   .skip(grammar.ref('spaces'))\
+                                   .element(grammar.ref('expr'))
+
+        def gc_xform_content(result):
+            ncontent = pisyntax.GC(result.content.content)
+            return ncontent
+
+        gc_parser.xform_content = gc_xform_content
+        
         # process expression parser
         expr_parser = expr.ExprParser()\
                           .skip_token('space')\
                           .register('term', PiParser.TermAtom())\
-                          .register('new', expr.parsers.Embed(restrict_parser))
+                          .register('new', expr.parsers.Embed(restrict_parser))\
+                          .register('gc', expr.parsers.Embed(gc_parser))
 
         grammar.register('expr', expr_parser)
 
@@ -144,7 +167,23 @@ if __name__ == "__main__":
 
     print("----")
 
-    parse_str = "  new(a) new(b) end  "
+    parse_str = "  new(a) new(bla_bAla9) end  "
+    print("Parsing: '{}'".format(parse_str))
+    #import pdb ; pdb.set_trace()
+    result = PiParser.parse_from_string(parse_str)
+    print("Gives: {}".format(repr(result.content.content)))
+
+    print("----")
+
+    parse_str = "  new(a) <gc> end  "
+    print("Parsing: '{}'".format(parse_str))
+    #import pdb ; pdb.set_trace()
+    result = PiParser.parse_from_string(parse_str)
+    print("Gives: {}".format(repr(result.content.content)))
+
+    print("----")
+
+    parse_str = "  new(a) <gc> new(b) <gc> new(c) end  "
     print("Parsing: '{}'".format(parse_str))
     #import pdb ; pdb.set_trace()
     result = PiParser.parse_from_string(parse_str)
