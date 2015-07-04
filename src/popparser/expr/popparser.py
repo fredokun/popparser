@@ -11,7 +11,7 @@ from popparser import Parser, ParseError
 class ExprParser(Parser):
     def __init__(self):
         Parser.__init__(self)
-        self.__expressions = {}
+        self.expressions = {}
         self.token = None
         self.llparser = None
         self.skip_tokens = set()
@@ -21,18 +21,18 @@ class ExprParser(Parser):
         return None
 
     def register(self, token_type, expression):
-        self.__expressions[token_type] = expression
+        self.expressions[token_type] = expression
         return self
 
     def unregister(self, expr_type):
         del_tok_type = None
-        for tok_type, expression in self.__expressions.items():
+        for tok_type, expression in self.expressions.items():
             if expression.expr_type == expr_type:
                 del_tok_type = tok_type
                 break
 
         if del_tok_type:
-            del self.__expressions[del_tok_type]
+            del self.expressions[del_tok_type]
 
     def skip_token(self, token_type):
         self.skip_tokens.add(token_type)
@@ -81,12 +81,12 @@ class ExprParser(Parser):
         if err is not None:
             return err
 
-        if self.token.token_type not in self.__expressions:
+        if self.token.token_type not in self.expressions:
             return ParseError("Unexpected token type: "\
                               + self.token.token_type,
                               self.token.start_pos, self.token.end_pos)
 
-        expr = self.__expressions[self.token.token_type]
+        expr = self.expressions[self.token.token_type]
 
         # advance
         prev_token = self.token
@@ -106,11 +106,11 @@ class ExprParser(Parser):
             return ParseError(str(self.token.content),
                               self.llparser.position, self.llparser.position)
 
-        if self.token.token_type not in self.__expressions:
+        if self.token.token_type not in self.expressions:
             self.llparser.put_back_token(self.token)
             return left  # end of expression at left
 
-        next_expr = self.__expressions[self.token.token_type]
+        next_expr = self.expressions[self.token.token_type]
 
         right_binding_power = rbp
         while True:
@@ -124,11 +124,11 @@ class ExprParser(Parser):
             if err is not None:
                 return err
 
-            if self.token.token_type not in self.__expressions:
+            if self.token.token_type not in self.expressions:
                 self.llparser.put_back_token(self.token)
                 return left
 
-            next_expr = self.__expressions[self.token.token_type]
+            next_expr = self.expressions[self.token.token_type]
 
             if (not next_expr.isinfix)\
                or right_binding_power >= next_expr.left_binding_power:
