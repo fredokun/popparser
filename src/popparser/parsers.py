@@ -287,7 +287,7 @@ class List(Parser):
             # separator
             if self.sep_token is not None:
                 next_token = llparser.peek_token()
-                if next_token.token_type != self.open_token:
+                if next_token.token_type != self.sep_token:
                     break
                 llparser.next_token()
         # end of loop
