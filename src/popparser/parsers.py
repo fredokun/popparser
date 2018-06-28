@@ -357,11 +357,12 @@ class Choice(Parser):
         return self.orelse(parser)
 
     def orelse(self, parser):
-        if parser.token_type:
-            if parser.token_type in self.__static_token_types:
-                raise Choice.StateError("Token type '" + parser.token_type \
-                                        + "' ambiguous")
-            self.__static_token_types.add(parser.token_type)
+        if not isinstance(parser.token_type, str):
+            raise Choice.StateError("Token type must be a string, provided:" + repr(parser.token_type))
+        if parser.token_type in self.__static_token_types:
+            raise Choice.StateError("Token type '" + parser.token_type \
+                                    + "' ambiguous")
+        self.__static_token_types.add(parser.token_type)
         self.__branches.append(parser)
         return self
 
@@ -369,6 +370,9 @@ class Choice(Parser):
         self.__dispatch = {}
         for branch in self.__branches:
             token_type = branch.token_type
+            if not isinstance(token_type, str):
+                raise Choice.StateError("Token type must be a string, provided:" + repr(token_type) + "\nParser is: "
+                                        + str(branch))
             if token_type in self.__dispatch:
                 raise Choice.StateError("Token type '" + token_type \
                                         + "' ambigous")
@@ -378,7 +382,7 @@ class Choice(Parser):
         msg = ""
         count = 0
         for token_type in self.__dispatch:
-            msg += "'" + token_type + "'"
+            msg += "'" + str(token_type) + "'"
             if count < len(self.__dispatch) - 1:
                 msg += ", or "
             count += 1
@@ -390,11 +394,12 @@ class Choice(Parser):
             self._build_dispatch()
 
         token = llparser.peek_token()
-        branch = self.__dispatch[token.token_type]
-        if not branch:
+
+        if token.token_type not in self.__dispatch:
             return ParseError("Unexpected token type '"\
-                              + token.token_type + "' expecting: "\
+                              + str(token.token_type) + "' expecting: "\
                               + self.explain_token_types())
+        branch = self.__dispatch[token.token_type]
 
         result = branch.parse(llparser)
         return result
